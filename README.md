@@ -15,7 +15,7 @@ An open source User Mode Anti-Cheat written for x86 applications.
 * Thread start address checks
 * Checking .text section modifications
 * Syscall callbacks
-* Proper callstack walks (see 
+* Proper callstack walks (see [unwinder](https://github.com/thetuh/unwinder) based on [SilentMoonWalk](https://github.com/klezVirus/SilentMoonwalk))
 * Kernel driver and external process components
 # Resources
 https://github.com/TsudaKageyu/minhook
