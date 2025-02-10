@@ -22,23 +22,23 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{3c8ce0dd-3bec-4bd4-8127-6201ca699e74}</ProjectGuid>
-    <RootNamespace>winapihooks</RootNamespace>
+    <RootNamespace>acmodule</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>ac_emulator</ProjectName>
+    <ProjectName>ac_module</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -74,11 +74,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)build\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)build\$(Configuration)\intermediates\executable\</IntDir>
+    <IntDir>$(SolutionDir)build\$(Configuration)\intermediates\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)build\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)build\$(Configuration)\intermediates\executable\</IntDir>
+    <IntDir>$(SolutionDir)build\$(Configuration)\intermediates\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)build\$(Configuration)\</OutDir>
@@ -94,10 +94,10 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>Default</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
@@ -109,13 +109,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>Default</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
   </ItemDefinitionGroup>
@@ -148,17 +148,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="hooks.cpp" />
+    <ClCompile Include="integrity.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="minhook\src\buffer.c" />
     <ClCompile Include="minhook\src\hde\hde32.c" />
     <ClCompile Include="minhook\src\hde\hde64.c" />
     <ClCompile Include="minhook\src\hook.c" />
     <ClCompile Include="minhook\src\trampoline.c" />
-    <ClCompile Include="syscall\syscalls.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="defines.h" />
     <ClInclude Include="hooks.h" />
+    <ClInclude Include="integrity.h" />
+    <ClInclude Include="minhook\include\MinHook.h" />
     <ClInclude Include="minhook\MinHook.h" />
     <ClInclude Include="minhook\src\buffer.h" />
     <ClInclude Include="minhook\src\hde\hde32.h" />
@@ -167,13 +169,10 @@
     <ClInclude Include="minhook\src\hde\table32.h" />
     <ClInclude Include="minhook\src\hde\table64.h" />
     <ClInclude Include="minhook\src\trampoline.h" />
-    <ClInclude Include="syscall\syscalls.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <MASM Include="syscall\instrumentationcallbackproxy.asm" />
-    <MASM Include="syscall\syscallsstubs.asm">
-      <FileType>Document</FileType>
-    </MASM>
+    <ClInclude Include="nt.h" />
+    <ClInclude Include="pe.h" />
+    <ClInclude Include="tinyformat.h" />
+    <ClInclude Include="memory.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

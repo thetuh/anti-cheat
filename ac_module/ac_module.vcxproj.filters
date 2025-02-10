@@ -33,7 +33,10 @@
     <ClCompile Include="minhook\src\trampoline.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="syscall\syscalls.c">
+    <ClCompile Include="hooks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="integrity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -62,19 +65,26 @@
     <ClInclude Include="minhook\MinHook.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="syscall\syscalls.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="defines.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="hooks.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <MASM Include="syscall\syscallsstubs.asm">
-      <Filter>Source Files</Filter>
-    </MASM>
+    <ClInclude Include="integrity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="minhook\include\MinHook.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pe.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tinyformat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="memory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="nt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
