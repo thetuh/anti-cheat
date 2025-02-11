@@ -273,7 +273,12 @@ namespace integrity
 
     bool validate_return_address( uintptr_t address, const char* function_name )
     {
+#ifdef _WIN64
+        const auto peb = ( _PEB* ) __readgsqword( 0x60 );
+#else
         const auto peb = ( _PEB* ) __readfsdword( 0x30 );
+#endif
+
         const auto list_head = &peb->Ldr->InMemoryOrderModuleList;
 
         for ( auto it = list_head->Flink; it != list_head; it = it->Flink )

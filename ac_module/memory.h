@@ -36,7 +36,7 @@ namespace memory
             current += mbi.RegionSize;
         }
 
-        printf( "%ssuccessfully dumped to file: %s\n", prefix ? prefix : "", file_name.str() );
+        printf( "%ssuccessfully dumped to file: %s\n", prefix ? prefix : "", file_name.str().c_str() );
 
         dump_file.close();
 	}
