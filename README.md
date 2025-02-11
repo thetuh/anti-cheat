@@ -1,5 +1,5 @@
 # Anti-Cheat
-An open source User Mode Anti-Cheat written for x86 applications.
+An open source User Mode Anti-Cheat compatible with x86 and x64 applications.
 # Notes
 * This is a foundational implementation and should be treated as such.
 * All saved files/dumps would practically be sent back to a server for static analysis.
