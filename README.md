@@ -8,7 +8,7 @@ An open source user mode anti-cheat compatible with x86 and x64 applications.
 * Detects DLL Injection (LoadLibrary or Manual Map)
 * Scans suspicious memory regions and dumps them to disk
 * Copies unsigned modules to disk
-* Checks .text section modifications thorough checksum comparisons
+* Checks .text section modifications through checksum comparisons
 * Reports all activity to console
 # Planned
 * Showcase/Demo
