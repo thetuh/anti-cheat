@@ -15,27 +15,30 @@ namespace integrity
 	{
 		AllocConsole();
 
-        HWND                con_hwndw{ GetConsoleWindow() };
-        RECT                  con_bound{ 904 + 219, 420 };
-        RECT                  wndw_rect{};
+		HWND                con_hwndw{ GetConsoleWindow() };
+		RECT                  con_bound{ 904 + 219, 420 };
+		RECT                  wndw_rect{};
 
-        SetConsoleTitle( "ac_module" );
+		SetConsoleTitle( "ac_module" );
 
-        GetWindowRect( con_hwndw, &wndw_rect );
-        MoveWindow( con_hwndw, wndw_rect.left, wndw_rect.top, con_bound.left, con_bound.top, true );
+		GetWindowRect( con_hwndw, &wndw_rect );
+		MoveWindow( con_hwndw, wndw_rect.left, wndw_rect.top, con_bound.left, con_bound.top, true );
 
-        SetWindowLong( con_hwndw, GWL_STYLE, GetWindowLong( con_hwndw, GWL_STYLE ) | WS_BORDER );
-        SetWindowLong( con_hwndw, GWL_EXSTYLE, GetWindowLong( con_hwndw, GWL_EXSTYLE ) | WS_EX_LAYERED );
+		SetWindowLong( con_hwndw, GWL_STYLE, GetWindowLong( con_hwndw, GWL_STYLE ) | WS_BORDER );
+		SetWindowLong( con_hwndw, GWL_EXSTYLE, GetWindowLong( con_hwndw, GWL_EXSTYLE ) | WS_EX_LAYERED );
 
-        SetLayeredWindowAttributes( con_hwndw, 0, 230, 2 );
-        SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY );
+		SetLayeredWindowAttributes( con_hwndw, 0, 230, 2 );
+		SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY );
 
-        freopen( ( "CONOUT$" ), ( "w" ), stdout );
+		freopen( ( "CONOUT$" ), ( "w" ), stdout );
 	}
 
 	bool init( HINSTANCE dll );
-	void watchdog();
 
+	void watchdog();
+	void watchdog2();
+
+	uintptr_t compute_disk_hash( LPCWSTR filepath );
 	bool validate_module_signature( LPCWSTR pwszSourceFile );
 	bool validate_return_address( uintptr_t address, const char* function_name );
 }

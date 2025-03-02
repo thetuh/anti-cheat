@@ -14,11 +14,11 @@ namespace integrity::hooks
 {
 	bool install()
 	{
-		auto log_error = []( const char* msg ) -> bool
-		{
-			MessageBox( NULL, msg, "ac_module", MB_OK | MB_ICONERROR );
-			return false;
-		};
+		auto log_error = []( const char* msg )
+			{
+				MessageBox( NULL, msg, "ac_module", MB_OK | MB_ICONERROR );
+				return false;
+			};
 
 		std::unordered_map<std::string, HMODULE> libraries =
 		{
@@ -27,7 +27,7 @@ namespace integrity::hooks
 			{"ntdll.dll", nullptr}
 		};
 
-		for (auto& [name, handle] : libraries)
+		for ( auto& [name, handle] : libraries )
 		{
 			handle = LoadLibrary( name.c_str() );
 			if ( !handle )
@@ -174,9 +174,9 @@ namespace integrity::hooks
 		}
 
 		NTSTATUS NTAPI NtMapViewOfSection( _In_ HANDLE SectionHandle, _In_ HANDLE ProcessHandle,
-				_Outptr_result_bytebuffer_( *ViewSize ) PVOID* BaseAddress, _In_ ULONG_PTR ZeroBits,
-				_In_ SIZE_T CommitSize, _Inout_opt_ PLARGE_INTEGER SectionOffset, _Inout_ PSIZE_T ViewSize,
-				_In_ SECTION_INHERIT InheritDisposition, _In_ ULONG AllocationType, _In_ ULONG Win32Protect )
+			_Outptr_result_bytebuffer_( *ViewSize ) PVOID* BaseAddress, _In_ ULONG_PTR ZeroBits,
+			_In_ SIZE_T CommitSize, _Inout_opt_ PLARGE_INTEGER SectionOffset, _Inout_ PSIZE_T ViewSize,
+			_In_ SECTION_INHERIT InheritDisposition, _In_ ULONG AllocationType, _In_ ULONG Win32Protect )
 		{
 			validate_return_address( ( uintptr_t ) _ReturnAddress(), "NtMapViewOfSection" );
 			return originals::NtMapViewOfSection( SectionHandle, ProcessHandle, BaseAddress, ZeroBits, CommitSize, SectionOffset, ViewSize, InheritDisposition, AllocationType, Win32Protect );
