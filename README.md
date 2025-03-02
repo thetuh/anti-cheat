@@ -13,7 +13,6 @@ An open source user mode anti-cheat compatible with x86 and x64 applications.
 * Showcase/Demo
 * Self integrity checks
 * Thread start address checks
-* Checking .text section modifications
 * Syscall callbacks
 * Proper callstack walks (see [unwinder](https://github.com/thetuh/unwinder) based on [SilentMoonWalk](https://github.com/klezVirus/SilentMoonwalk))
 * Kernel driver and external process components
