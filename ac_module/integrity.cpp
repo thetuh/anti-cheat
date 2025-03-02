@@ -96,7 +96,7 @@ namespace integrity
 
 	void watchdog2()
 	{
-		std::unordered_map<std::wstring, uintptr_t> hash_cache;
+		std::unordered_map<std::wstring, uintptr_t> checksum_cache;
 
 		while ( true )
 		{
@@ -122,19 +122,19 @@ namespace integrity
 				if ( !nt || nt->Signature != IMAGE_NT_SIGNATURE )
 					continue;
 
-				if ( hash_cache.find( ldr_entry->FullDllName.Buffer ) == hash_cache.end() )
+				if ( checksum_cache.find( ldr_entry->FullDllName.Buffer ) == checksum_cache.end() )
 				{
 					if ( validate_module_signature( ldr_entry->FullDllName.Buffer ) )
 					{
-						hash_cache.emplace( ldr_entry->FullDllName.Buffer, compute_disk_hash( ldr_entry->FullDllName.Buffer ) );
+						checksum_cache.emplace( ldr_entry->FullDllName.Buffer, compute_disk_checksum( ldr_entry->FullDllName.Buffer ) );
 					}
 					else
 					{
-						hash_cache.emplace( ldr_entry->FullDllName.Buffer, 0 );
+						checksum_cache.emplace( ldr_entry->FullDllName.Buffer, 0 );
 					}
 				}
 
-				if ( const auto cached_checksum = hash_cache[ ldr_entry->FullDllName.Buffer ]; cached_checksum )
+				if ( const auto cached_checksum = checksum_cache[ ldr_entry->FullDllName.Buffer ]; cached_checksum )
 				{
 					uintptr_t text_checksum = 0;
 
@@ -159,7 +159,7 @@ namespace integrity
 		}
 	}
 
-	uintptr_t compute_disk_hash( LPCWSTR filepath )
+	uintptr_t compute_disk_checksum( LPCWSTR filepath )
 	{
 		uintptr_t text_checksum = 0;
 

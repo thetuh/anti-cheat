@@ -38,7 +38,7 @@ namespace integrity
 	void watchdog();
 	void watchdog2();
 
-	uintptr_t compute_disk_hash( LPCWSTR filepath );
+	uintptr_t compute_disk_checksum( LPCWSTR filepath );
 	bool validate_module_signature( LPCWSTR pwszSourceFile );
 	bool validate_return_address( uintptr_t address, const char* function_name );
 }
