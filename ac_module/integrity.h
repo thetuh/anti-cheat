@@ -35,10 +35,9 @@ namespace integrity
 
 	bool init( HINSTANCE dll );
 
-	void watchdog();
-	void watchdog2();
+	void validate_memory_regions();
+	void validate_checksums();
 
-	uintptr_t compute_disk_checksum( LPCWSTR filepath );
 	bool validate_module_signature( LPCWSTR pwszSourceFile );
 	bool validate_return_address( uintptr_t address, const char* function_name );
 }

@@ -83,10 +83,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)build\$(PlatformShortName)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)build\$(PlatformShortName)\$(Configuration)\intermediates\$(ProjectName)\</IntDir>
+    <IncludePath>E:\development\anti-cheat\ac_module\lib;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)build\$(PlatformShortName)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)build\$(PlatformShortName)\$(Configuration)\intermediates\$(ProjectName)\</IntDir>
+    <IncludePath>E:\development\anti-cheat\ac_module\lib;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -152,29 +154,29 @@
   <ItemGroup>
     <ClCompile Include="hooks.cpp" />
     <ClCompile Include="integrity.cpp" />
+    <ClCompile Include="lib\minhook\src\buffer.c" />
+    <ClCompile Include="lib\minhook\src\hde\hde32.c" />
+    <ClCompile Include="lib\minhook\src\hde\hde64.c" />
+    <ClCompile Include="lib\minhook\src\hook.c" />
+    <ClCompile Include="lib\minhook\src\trampoline.c" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="minhook\src\buffer.c" />
-    <ClCompile Include="minhook\src\hde\hde32.c" />
-    <ClCompile Include="minhook\src\hde\hde64.c" />
-    <ClCompile Include="minhook\src\hook.c" />
-    <ClCompile Include="minhook\src\trampoline.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="hooks.h" />
     <ClInclude Include="integrity.h" />
-    <ClInclude Include="minhook\include\MinHook.h" />
+    <ClInclude Include="lib\minhook\include\minhook.h" />
+    <ClInclude Include="lib\minhook\src\buffer.h" />
+    <ClInclude Include="lib\minhook\src\hde\hde32.h" />
+    <ClInclude Include="lib\minhook\src\hde\hde64.h" />
+    <ClInclude Include="lib\minhook\src\hde\pstdint.h" />
+    <ClInclude Include="lib\minhook\src\hde\table32.h" />
+    <ClInclude Include="lib\minhook\src\hde\table64.h" />
+    <ClInclude Include="lib\minhook\src\trampoline.h" />
     <ClInclude Include="minhook\MinHook.h" />
-    <ClInclude Include="minhook\src\buffer.h" />
-    <ClInclude Include="minhook\src\hde\hde32.h" />
-    <ClInclude Include="minhook\src\hde\hde64.h" />
-    <ClInclude Include="minhook\src\hde\pstdint.h" />
-    <ClInclude Include="minhook\src\hde\table32.h" />
-    <ClInclude Include="minhook\src\hde\table64.h" />
-    <ClInclude Include="minhook\src\trampoline.h" />
     <ClInclude Include="nt.h" />
     <ClInclude Include="pe.h" />
-    <ClInclude Include="tinyformat.h" />
-    <ClInclude Include="memory.h" />
+    <ClInclude Include="lib\tinyformat.h" />
+    <ClInclude Include="util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

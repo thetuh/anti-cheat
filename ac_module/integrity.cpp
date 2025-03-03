@@ -1,6 +1,6 @@
 #include "integrity.h"
 #include "hooks.h"
-#include "memory.h"
+#include "util.h"
 
 #include <thread>
 #include <wintrust.h>
@@ -37,8 +37,9 @@ namespace integrity
 			printf( "[+] wiped PE header\n" );
 		}
 
-		std::thread( watchdog ).detach();
-		std::thread( watchdog2 ).detach();
+		std::thread( validate_memory_regions ).detach();
+
+		std::thread( validate_checksums ).detach();
 
 		printf( "[+] started watchdog threads\n" );
 
@@ -50,7 +51,7 @@ namespace integrity
 		return true;
 	}
 
-	void watchdog()
+	void validate_memory_regions()
 	{
 		std::unordered_map<uintptr_t, bool> suspicious_regions;
 
@@ -84,7 +85,7 @@ namespace integrity
 				{
 					printf( "[!] suspicious memory region: 0x%p\n\tattempting to dump\n", address );
 
-					memory::dump_to_file( address, "\t" );
+					util::dump_to_file( address, "\t" );
 
 					reported = true;
 				}
@@ -94,110 +95,40 @@ namespace integrity
 		}
 	}
 
-	void watchdog2()
+	void validate_checksums()
 	{
-		std::unordered_map<std::wstring, uintptr_t> checksum_cache;
+		std::unordered_map<std::wstring, std::vector<checksum_region>> checksum_cache;
 
 		while ( true )
 		{
-#ifdef _WIN64
-			const auto peb = ( _PEB* ) __readgsqword( 0x60 );
-#else
-			const auto peb = ( _PEB* ) __readfsdword( 0x30 );
-#endif
-
-			const auto list_head = &peb->Ldr->InMemoryOrderModuleList;
-
-			for ( auto it = list_head->Flink; it != list_head; it = it->Flink )
-			{
-				const auto ldr_entry = CONTAINING_RECORD( it, LDR_DATA_TABLE_ENTRY, InMemoryOrderLinks );
-				if ( !ldr_entry )
-					continue;
-
-				const auto dos = ( IMAGE_DOS_HEADER* ) ldr_entry->DllBase;
-				if ( !dos || dos->e_magic != IMAGE_DOS_SIGNATURE )
-					continue;
-
-				const auto nt = ( IMAGE_NT_HEADERS* ) ( ( uintptr_t ) dos + dos->e_lfanew );
-				if ( !nt || nt->Signature != IMAGE_NT_SIGNATURE )
-					continue;
-
-				if ( checksum_cache.find( ldr_entry->FullDllName.Buffer ) == checksum_cache.end() )
+			util::walk_ldr_list( [ & ]( LDR_DATA_TABLE_ENTRY* ldr_entry )
 				{
-					if ( validate_module_signature( ldr_entry->FullDllName.Buffer ) )
+					if ( checksum_cache.find( ldr_entry->FullDllName.Buffer ) == checksum_cache.end() )
 					{
-						checksum_cache.emplace( ldr_entry->FullDllName.Buffer, compute_disk_checksum( ldr_entry->FullDllName.Buffer ) );
+						checksum_cache.emplace( ldr_entry->FullDllName.Buffer, util::compute_file_checksum( ldr_entry->FullDllName.Buffer, ( uintptr_t ) ldr_entry->DllBase ) );
 					}
-					else
-					{
-						checksum_cache.emplace( ldr_entry->FullDllName.Buffer, 0 );
-					}
-				}
 
-				if ( const auto cached_checksum = checksum_cache[ ldr_entry->FullDllName.Buffer ]; cached_checksum )
-				{
-					uintptr_t text_checksum = 0;
-
-					auto section_header = IMAGE_FIRST_SECTION( nt );
-					for ( WORD i = 0; i < nt->FileHeader.NumberOfSections; i++ )
+					if ( auto& cached_checksum = checksum_cache[ ldr_entry->FullDllName.Buffer ]; cached_checksum.size() )
 					{
-						if ( !memcmp( section_header[ i ].Name, ".text", 5 ) )
+						for ( auto& checksum_region : cached_checksum )
 						{
-							const auto text_start = reinterpret_cast< const std::byte* >( dos ) + section_header[ i ].VirtualAddress;
-							for ( DWORD j = 0; j < section_header[ i ].SizeOfRawData; ++j )
-								text_checksum += static_cast< uintptr_t >( text_start[ j ] );
+							uintptr_t checksum = 0;
+
+							const auto checksum_start = ( std::byte* ) ( checksum_region.start );
+							for ( DWORD i = 0; i < checksum_region.size; i++ )
+								checksum += ( uintptr_t ) checksum_start[ i ];
+
+							if ( checksum != checksum_region.checksum && !checksum_region.reported )
+							{
+								printf( "[!] %s checksum mismatch: %ls\n", checksum_region.name, ldr_entry->FullDllName.Buffer );
+								checksum_region.reported = true;
+							}
 						}
 					}
-
-					if ( text_checksum != cached_checksum )
-						printf( "[!] checksum mismatch %ls\n", ldr_entry->FullDllName.Buffer );
-				}
-
-			}
+				} );
 
 			std::this_thread::sleep_for( std::chrono::milliseconds( 500 ) );
 		}
-	}
-
-	uintptr_t compute_disk_checksum( LPCWSTR filepath )
-	{
-		uintptr_t text_checksum = 0;
-
-		std::basic_ifstream<std::byte> file_stream( filepath, std::ios::binary );
-		if ( !file_stream )
-		{
-			printf( "[!] failed to open file stream to %ls\n", filepath );
-			return text_checksum;
-		}
-
-		const std::vector<std::byte> image_buffer = { std::istreambuf_iterator<std::byte>( file_stream ), std::istreambuf_iterator<std::byte>() };
-
-		const auto dos = ( IMAGE_DOS_HEADER* ) image_buffer.data();
-		if ( !dos || dos->e_magic != IMAGE_DOS_SIGNATURE )
-		{
-			printf( "[!] invalid dos header for disk image %ls\n", filepath );
-			return text_checksum;
-		}
-
-		const auto nt = ( IMAGE_NT_HEADERS* ) ( ( uintptr_t ) dos + dos->e_lfanew );
-		if ( !nt || nt->Signature != IMAGE_NT_SIGNATURE )
-		{
-			printf( "[!] invalid nt headers for disk image %ls\n", filepath );
-			return text_checksum;
-		}
-
-		auto section_header = IMAGE_FIRST_SECTION( nt );
-		for ( WORD i = 0; i < nt->FileHeader.NumberOfSections; i++ )
-		{
-			if ( !memcmp( section_header[ i ].Name, ".text", 5 ) )
-			{
-				const auto text_start = reinterpret_cast< const std::byte* >( image_buffer.data() ) + section_header[ i ].PointerToRawData;
-				for ( DWORD j = 0; j < section_header[ i ].SizeOfRawData; ++j )
-					text_checksum += static_cast< uintptr_t >( text_start[ j ] );
-			}
-		}
-
-		return text_checksum;
 	}
 
 	// https://learn.microsoft.com/en-us/windows/win32/seccrypto/example-c-program--verifying-the-signature-of-a-pe-file
@@ -418,7 +349,7 @@ namespace integrity
 
 			if ( mbi.AllocationBase )
 			{
-				memory::dump_to_file( ( uintptr_t ) mbi.AllocationBase, "\t" );
+				util::dump_to_file( ( uintptr_t ) mbi.AllocationBase, "\t" );
 			}
 			else
 			{

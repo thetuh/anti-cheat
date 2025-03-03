@@ -1,8 +1,8 @@
 #include "hooks.h"
 #include "integrity.h"
-#include "tinyformat.h"
 
-#include "minhook/include/MinHook.h"
+#include "tinyformat.h"
+#include "minhook/include/minhook.h"
 
 #include <intrin.h>
 #include <unordered_map>
