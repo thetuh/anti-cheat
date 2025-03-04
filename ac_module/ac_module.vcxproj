@@ -75,10 +75,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)build\$(PlatformShortName)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)build\$(PlatformShortName)\$(Configuration)\intermediates\$(ProjectName)\</IntDir>
+    <IncludePath>E:\development\anti-cheat\ac_module\lib;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)build\$(PlatformShortName)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)build\$(PlatformShortName)\$(Configuration)\intermediates\$(ProjectName)\</IntDir>
+    <IncludePath>E:\development\anti-cheat\ac_module\lib;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)build\$(PlatformShortName)\$(Configuration)\</OutDir>

@@ -72,8 +72,14 @@ namespace integrity
 				if ( mbi.Type != MEM_PRIVATE )
 					continue;
 
-				if ( mbi.AllocationProtect == PAGE_EXECUTE_READWRITE && mbi.Protect == PAGE_READONLY ||
-					mbi.AllocationProtect == PAGE_EXECUTE_READWRITE && mbi.Protect == PAGE_EXECUTE_READWRITE )
+				/*
+					will potentially catch more suspicious regions but also incur false positives
+
+					if ( mbi.AllocationProtect == PAGE_EXECUTE_READWRITE && mbi.Protect == PAGE_READONLY ||
+						mbi.AllocationProtect == PAGE_EXECUTE_READWRITE && mbi.Protect == PAGE_EXECUTE_READWRITE )
+				*/
+
+				if ( mbi.Protect == PAGE_EXECUTE_READ )
 				{
 					suspicious_regions.emplace( ( uintptr_t ) mbi.AllocationBase, false );
 				}
@@ -105,7 +111,7 @@ namespace integrity
 				{
 					if ( checksum_cache.find( ldr_entry->FullDllName.Buffer ) == checksum_cache.end() )
 					{
-						checksum_cache.emplace( ldr_entry->FullDllName.Buffer, util::compute_file_checksum( ldr_entry->FullDllName.Buffer, ( uintptr_t ) ldr_entry->DllBase ) );
+						checksum_cache.emplace( ldr_entry->FullDllName.Buffer, util::compute_file_checksums( ldr_entry->FullDllName.Buffer, ( uintptr_t ) ldr_entry->DllBase ) );
 					}
 
 					if ( auto& cached_checksum = checksum_cache[ ldr_entry->FullDllName.Buffer ]; cached_checksum.size() )

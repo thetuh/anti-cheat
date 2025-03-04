@@ -2,6 +2,12 @@
 
 #include <cstdint>
 
+struct reloc_entry
+{
+	std::uint16_t offset : 12;
+	std::uint16_t type : 4;
+};
+
 #ifdef _WIN64
 struct PEB_LDR_DATA
 {
